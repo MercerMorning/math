@@ -1,9 +1,10 @@
 <?php
-$function = 'a&b&(b&cvc)va&(a&b)';
+$function = 'a&b';
 
 $function = replaceLogicSymbols($function);
 
-if (validate($function)) {
+try {
+    validate($function);
     $matches = [];
     $variables = array_flip(array_unique(str_split(preg_replace('/[^a-z]/i','',$function))));
     $length = count($variables);
@@ -25,8 +26,7 @@ if (validate($function)) {
     }
 
     echo draw($subsequencesTable, $variables);
-
-} else {
+} catch (Throwable $exception) {
     echo 'Validate failed';
 }
 
@@ -89,9 +89,14 @@ function get(int $currentSubsequenceNum, int $subsequencesCount, int $currentSub
 }
 
 
-function validate(string  $expression) :bool
+/**
+ * @throws Exception
+ */
+function validate(string $expression) :bool
 {
-    return (checkValidBrackets($expression) && checkSuspiciousConstructions($expression));
+    $isValidated = checkValidBrackets($expression) && checkSuspiciousConstructions($expression);
+    if (!$isValidated) throw new Exception();
+    return true;
 }
 
 function checkSuspiciousConstructions(string $expression) :bool
@@ -121,5 +126,5 @@ function replaceLogicSymbols(string $function) :string
     foreach ($symbols as $originalSymbol => $replaceSymbol) {
         $function = str_replace($originalSymbol, $replaceSymbol, $function);
     }
-    return $function;
+    return '(' . $function . ')';
 }
