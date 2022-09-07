@@ -1,5 +1,8 @@
 <?php
 
+echo PHP_EOL;
+echo table(4);
+
 function table(int $subsequenceLength) :string
 {
 
